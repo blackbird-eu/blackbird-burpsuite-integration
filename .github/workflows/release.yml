@@ -19,7 +19,7 @@ jobs:
     - name: Create Release Package
       run: |
         mkdir release
-        cp blackbird-burpsuite-integration.py LICENSE README.md release/
+        cp -r blackbird-burpsuite-integration.py .assets/ LICENSE README.md release/
         cd release
         zip -r ../blackbird-burpsuite-integration.zip .
         cd ..
