@@ -206,7 +206,7 @@ Usage Guide:
 	def createMenuItems(self, invocation):
 		self.context = invocation
 		menuList = ArrayList()
-		menuList.add(JMenuItem("Scan URL for Command Injections", actionPerformed=lambda event: self.sendToAPI(event, "s9r")))
+		menuList.add(JMenuItem("Scan URL for Command Injections", actionPerformed=lambda event: self.sendToAPI(event, "ciscanner")))
 		menuList.add(JMenuItem("Scan URL for SQL Injections", actionPerformed=lambda event: self.sendToAPI(event, "sqls")))
 		menuList.add(JMenuItem("Scan URL for SSRF", actionPerformed=lambda event: self.sendToAPI(event, "s9r")))
 		menuList.add(JMenuItem("Scan URL for LFI", actionPerformed=lambda event: self.sendToAPI(event, "l8r")))
@@ -223,7 +223,7 @@ Usage Guide:
 			self.stderr.println("API key not set. Please set it in the extension tab.")
 			return
 
-		scanners = ["xsscanner"]
+		scanners = ["ciscanner", "sqls", "s9r", "l8r", "inject49", "xsscanner", "redirectx", "corscanner", "jsauditor"]
 
 		if not any(s in scanner for s in scanners):
 			self.stderr.println("Invalid scanner provided.")
