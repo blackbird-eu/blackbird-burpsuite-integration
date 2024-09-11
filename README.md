@@ -17,7 +17,7 @@ This Burp Suite extension integrates BLACKBIRD Web App Pentesting Suite with Bur
 - Configurable API key, timeout, and delay settings
 - Easy-to-use interface within Burp Suite
 
-For a more comprehensive list of supported security vulnerabilities visit [website](https://blackbirdsec.eu/?ref=github)
+For a more comprehensive list of supported security vulnerabilities visit our website: [https://blackbirdsec.eu/](https://blackbirdsec.eu/?ref=github)
 
 ## Installation
 
