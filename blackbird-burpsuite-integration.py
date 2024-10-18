@@ -266,7 +266,7 @@ Usage Guide:
 
 		if scanner == None:
 			config = {
-				"name": "Burpsuite Scan",
+				"name": "",
 				"targets": [ target ],
 				"targetId": None,
 				"type": "deep",

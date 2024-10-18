@@ -4,6 +4,7 @@ This Burp Suite extension integrates BLACKBIRD Web App Pentesting Suite with Bur
 
 ## Features
 
+- Scan URLs for all security vulnerabilities with 1 click
 - Scan URLs for multiple security vulnerabilities:
   - Command Injections
   - SQL Injections
