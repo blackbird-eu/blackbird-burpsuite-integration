@@ -214,7 +214,8 @@ Usage Guide:
 		menuList.add(JMenuItem("Scan URL for XSS", actionPerformed=lambda event: self.sendToAPI(event, "xsscanner")))
 		menuList.add(JMenuItem("Scan URL for Open URL Redirects", actionPerformed=lambda event: self.sendToAPI(event, "redirectx")))
 		menuList.add(JMenuItem("Scan URL for CORS Misconfigurations", actionPerformed=lambda event: self.sendToAPI(event, "corscanner")))
-		menuList.add(JMenuItem("Audit JavaScript file", actionPerformed=lambda event: self.sendToAPI(event, "jsauditor")))
+		menuList.add(JMenuItem("Scan JavaScript file", actionPerformed=lambda event: self.sendToAPI(event, "jsauditor")))
+		menuList.add(JMenuItem("Scan URL for all vulnerability types", actionPerformed=lambda event: self.sendToAPI(event, None)))
 
 		return menuList
 
@@ -225,7 +226,7 @@ Usage Guide:
 
 		scanners = ["ciscanner", "sqls", "s9r", "l8r", "inject49", "xsscanner", "redirectx", "corscanner", "jsauditor"]
 
-		if not any(s in scanner for s in scanners):
+		if not any(s in str(scanner) for s in scanners) and scanner != None:
 			self.stderr.println("Invalid scanner provided.")
 			return
 
@@ -237,7 +238,12 @@ Usage Guide:
 
 		self.stdout.println("[INFO:] API TOKEN LOADED: ****************************************************************")
 
-		url = URL("https://api.blackbirdsec.eu/api/" + str(scanner) + "/scan")
+		reqURI = "https://api.blackbirdsec.eu/api/" + str(scanner) + "/scan"
+
+		if scanner == None:
+			reqURI = "https://api.blackbirdsec.eu/api/scan"
+		
+		url = URL(reqURI)
 		connection = url.openConnection()
 		connection.setRequestMethod("PUT")
 		connection.setDoOutput(True)
@@ -257,6 +263,58 @@ Usage Guide:
 			"delay": int(self.Delay),
 			"timeout": int(self.Timeout)
 		}
+
+		if scanner == None:
+			config = {
+				"name": "",
+				"targets": [ target ],
+				"targetId": None,
+				"type": "deep",
+				"schedule": {
+					"scheduled": False,
+					"frequency": "once",
+					"day": 1,
+					"weekDay": 0,
+					"month": 0,
+					"hour": 0,
+					"minute": 0
+				},
+				"config": {
+					"options": {
+						"SKIP_CONTENT_DISCOVERY": True,
+						"SKIP_SSL": False,
+						"MODE": "DEFAULT",
+						"MAX_DEPTH": 3,
+						"BROWSER": False,
+						"EXTERNAL_SOURCES": False,
+						"JAVASCRIPT_PARSING": False,
+						"SUBMIT_FORMS": False,
+						"BRUTEFORCING": False,
+						"FILTER_TARGETS": False,
+						"HTTP_PORTS": "",
+						"EXCLUDED_PATHS": [ ]
+					},
+					"VPNId": None,
+					"headers": "",
+					"delay": 0,
+					"timeout": 7000,
+					"notify": True,
+					"scanners": [
+						"waypoints",
+						"cnamex",
+						"corscanner",
+						"redirectx",
+						"xsscanner",
+						"sqls",
+						"s9r",
+						"l8r",
+						"ciscanner",
+						"inject49",
+						"jsauditor"
+					]
+				}
+			}
+
 		payload = json.dumps(config)
 		connection.getOutputStream().write(payload.encode('utf-8'))
 
