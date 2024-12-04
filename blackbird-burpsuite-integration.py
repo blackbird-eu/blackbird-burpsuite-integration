@@ -224,7 +224,7 @@ Usage Guide:
 			self.stderr.println("API key not set. Please set it in the extension tab.")
 			return
 
-		scanners = ["ciscanner", "sqls", "s9r", "l8r", "inject49", "xsscanner", "redirectx", "corscanner", "jsauditor"]
+		scanners = ["cnamex", "ciscanner", "sqls", "s9r", "l8r", "inject49", "xsscanner", "redirectx", "corscanner", "jsauditor", "waypoints"]
 
 		if not any(s in str(scanner) for s in scanners) and scanner != None:
 			self.stderr.println("Invalid scanner provided.")
@@ -299,23 +299,11 @@ Usage Guide:
 					"VPNId": None,
 					"requestMethod": request_method,
 					"requestBody": request_body,
-					"headers": "",
-					"delay": 0,
-					"timeout": 7000,
+					"headers": self.headersToString(request_info.getHeaders()),
+					"delay": int(self.Delay),
+					"timeout": int(self.Timeout),
 					"notify": True,
-					"scanners": [
-						"waypoints",
-						"cnamex",
-						"corscanner",
-						"redirectx",
-						"xsscanner",
-						"sqls",
-						"s9r",
-						"l8r",
-						"ciscanner",
-						"inject49",
-						"jsauditor"
-					]
+					"scanners": scanners
 				}
 			}
 
