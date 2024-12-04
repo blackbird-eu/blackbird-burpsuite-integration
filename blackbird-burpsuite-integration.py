@@ -206,6 +206,7 @@ Usage Guide:
 	def createMenuItems(self, invocation):
 		self.context = invocation
 		menuList = ArrayList()
+		menuList.add(JMenuItem("Scan URL for all vulnerability types", actionPerformed=lambda event: self.sendToAPI(event, None)))
 		menuList.add(JMenuItem("Scan URL for Command Injections", actionPerformed=lambda event: self.sendToAPI(event, "ciscanner")))
 		menuList.add(JMenuItem("Scan URL for SQL Injections", actionPerformed=lambda event: self.sendToAPI(event, "sqls")))
 		menuList.add(JMenuItem("Scan URL for SSRF", actionPerformed=lambda event: self.sendToAPI(event, "s9r")))
@@ -215,7 +216,6 @@ Usage Guide:
 		menuList.add(JMenuItem("Scan URL for Open URL Redirects", actionPerformed=lambda event: self.sendToAPI(event, "redirectx")))
 		menuList.add(JMenuItem("Scan URL for CORS Misconfigurations", actionPerformed=lambda event: self.sendToAPI(event, "corscanner")))
 		menuList.add(JMenuItem("Scan JavaScript file", actionPerformed=lambda event: self.sendToAPI(event, "jsauditor")))
-		menuList.add(JMenuItem("Scan URL for all vulnerability types", actionPerformed=lambda event: self.sendToAPI(event, None)))
 
 		return menuList
 
@@ -224,7 +224,7 @@ Usage Guide:
 			self.stderr.println("API key not set. Please set it in the extension tab.")
 			return
 
-		scanners = ["ciscanner", "sqls", "s9r", "l8r", "inject49", "xsscanner", "redirectx", "corscanner", "jsauditor"]
+		scanners = ["cnamex", "ciscanner", "sqls", "s9r", "l8r", "inject49", "xsscanner", "redirectx", "corscanner", "jsauditor", "waypoints"]
 
 		if not any(s in str(scanner) for s in scanners) and scanner != None:
 			self.stderr.println("Invalid scanner provided.")
@@ -234,7 +234,8 @@ Usage Guide:
 		request_info = self._helpers.analyzeRequest(http_traffic)
 		request_body = self.getRequestBody(http_traffic)
 
-		target = str(request_info.getUrl())
+		request_method = str(request_info.getMethod())
+		target = request_method + ":::" + str(request_info.getUrl()) # Method + URL in required format
 
 		self.stdout.println("[INFO:] API TOKEN LOADED: ****************************************************************")
 
@@ -256,7 +257,8 @@ Usage Guide:
 			"targets": [
 				target
 			],
-			"POSTBody": request_body,
+			"requestMethod": request_method,
+			"requestBody": request_body,
 			"payloadSet": 1,
 			"browser": True,
 			"headers": self.headersToString(request_info.getHeaders()),
@@ -295,23 +297,13 @@ Usage Guide:
 						"EXCLUDED_PATHS": [ ]
 					},
 					"VPNId": None,
-					"headers": "",
-					"delay": 0,
-					"timeout": 7000,
+					"requestMethod": request_method,
+					"requestBody": request_body,
+					"headers": self.headersToString(request_info.getHeaders()),
+					"delay": int(self.Delay),
+					"timeout": int(self.Timeout),
 					"notify": True,
-					"scanners": [
-						"waypoints",
-						"cnamex",
-						"corscanner",
-						"redirectx",
-						"xsscanner",
-						"sqls",
-						"s9r",
-						"l8r",
-						"ciscanner",
-						"inject49",
-						"jsauditor"
-					]
+					"scanners": scanners
 				}
 			}
 
@@ -335,8 +327,13 @@ Usage Guide:
 			try:
 				response_json = json.loads(response_body)
 				if response_json.get("success"):
-					scan_id = response_json.get("id")
-					self.stdout.println("[SUCCESS:] Scan initiated successfully. Scan ID: " + str(scan_id))
+					scan_id = response_json.get("scanId")
+					live_logs_url = ""
+					if scanner == None:
+						live_logs_url = "https://app.blackbirdsec.eu/deep-scans/results/" + str(scan_id)
+					else:
+						live_logs_url = "https://app.blackbirdsec.eu/scanners/" + scanner + "/results/" + str(scan_id)
+					self.stdout.println("[SUCCESS:] Scan initiated successfully. Open scan to view live logs: " + live_logs_url)
 				else:
 					self.stdout.println("[WARNING:] Request was successful, but 'success' property was false.")
 			except json.JSONDecodeError:
