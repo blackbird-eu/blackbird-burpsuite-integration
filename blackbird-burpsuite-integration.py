@@ -285,7 +285,7 @@ Usage Guide:
 					"options": {
 						"SKIP_CONTENT_DISCOVERY": True,
 						"SKIP_SSL": False,
-						"MODE": "DEFAULT",
+						"MODE": "TRADITIONAL",
 						"MAX_DEPTH": 3,
 						"BROWSER": False,
 						"EXTERNAL_SOURCES": False,
